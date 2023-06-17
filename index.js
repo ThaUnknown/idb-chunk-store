@@ -48,9 +48,6 @@ class Storage extends EventEmitter {
       return queueMicrotask(() => cb(new Error('Chunk length must be ' + this.chunkLength)))
     }
 
-    // Zero-copy coerce Buffer to Uint8Array
-    buf = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength)
-
     // If the backing buffer is larger, copy out only the relevant slice
     // so extra data doesn't get saved to indexeddb
     if (buf.byteOffset !== 0 || buf.byteLength !== buf.buffer.byteLength) {
@@ -76,10 +73,10 @@ class Storage extends EventEmitter {
     if (this.closed) return queueMicrotask(() => cb(new Error('Storage is closed')))
 
     ;(async () => {
-      let rawResult
+      let buf
       try {
         const db = await this.dbPromise
-        rawResult = await db.get('chunks', index)
+        buf = await db.get('chunks', index)
       } catch (err) {
         cb(err)
         return
@@ -87,14 +84,12 @@ class Storage extends EventEmitter {
 
       // rawResult should be undefined if the chunk is not found,
       // but some old browsers occasionally return null
-      if (rawResult == null) {
+      if (buf == null) {
         const err = new Error('Chunk not found')
         err.notFound = true
         cb(err)
         return
       }
-
-      let buf = new Uint8Array(rawResult.buffer, rawResult.byteOffset, rawResult.byteLength)
 
       const offset = opts.offset || 0
       const len = opts.length || (buf.length - offset)
