@@ -3,7 +3,7 @@ import EventEmitter from 'events'
 import { openDB, deleteDB } from 'idb'
 import queueMicrotask from 'queue-microtask'
 
-class Storage extends EventEmitter {
+export default class Storage extends EventEmitter {
   constructor (chunkLength, opts) {
     if (!opts) opts = {}
     super()
@@ -136,4 +136,3 @@ class Storage extends EventEmitter {
     })
   }
 }
-module.exports = Storage

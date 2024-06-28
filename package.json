@@ -1,7 +1,7 @@
 {
   "name": "@thaunknown/idb-chunk-store",
   "description": "IndexedDB chunk store that is abstract-chunk-store compliant",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "type": "module",
   "author": "Santiago Gil (@_santiagogil_)",
   "bugs": {
