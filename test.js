@@ -16,7 +16,7 @@ tape('only store relevant slice of Uint8Array', (t) => {
     t.error(err)
     store.get(0, function (err, chunk) {
       t.error(err)
-      t.deepEqual(chunk, Buffer.from('1234567890'))
+      t.deepEqual(Buffer.from(chunk), Buffer.from('1234567890'))
 
       t.equal(chunk.buffer.byteLength, 10)
       t.equal(chunk.byteOffset, 0)

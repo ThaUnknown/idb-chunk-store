@@ -1,22 +1,23 @@
 {
   "name": "@thaunknown/idb-chunk-store",
   "description": "IndexedDB chunk store that is abstract-chunk-store compliant",
-  "version": "1.0.2",
+  "version": "1.0.3",
+  "type": "module",
   "author": "Santiago Gil (@_santiagogil_)",
   "bugs": {
     "url": "https://github.com/thaunknown/idb-chunk-store/issues"
   },
   "dependencies": {
-    "idb": "^6.1.2",
+    "idb": "^7.1.1",
     "queue-microtask": "^1.2.3"
   },
   "devDependencies": {
     "abstract-chunk-store": "^1.5.0",
-    "airtap": "^4.0.3",
+    "airtap": "^4.0.4",
     "airtap-manual": "^1.0.0",
     "airtap-sauce": "^1.1.2",
-    "standard": "^16.0.3",
-    "tape": "^5.2.2"
+    "standard": "^17.1.0",
+    "tape": "^5.8.1"
   },
   "homepage": "https://github.com/thaunknown/idb-chunk-store",
   "keywords": [

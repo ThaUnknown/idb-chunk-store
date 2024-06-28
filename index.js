@@ -1,8 +1,7 @@
-'use strict'
-const idb = require('idb')
+import EventEmitter from 'events'
 
-const EventEmitter = require('events').EventEmitter
-const queueMicrotask = require('queue-microtask')
+import { openDB, deleteDB } from 'idb'
+import queueMicrotask from 'queue-microtask'
 
 class Storage extends EventEmitter {
   constructor (chunkLength, opts) {
@@ -22,14 +21,10 @@ class Storage extends EventEmitter {
       this.lastChunkIndex = Math.ceil(this.length / this.chunkLength) - 1
     }
 
-    this.dbPromise = idb.openDB(this.name, undefined, {
-      upgrade: (db) => {
-        db.createObjectStore('chunks')
-      },
-      blocking: () => {
-        // Fires if the database is deleted from outside this Storage object
-        this.close()
-      },
+    this.dbPromise = openDB(this.name, undefined, {
+      upgrade: db => db.createObjectStore('chunks'),
+      // Fires if the database is deleted from outside this Storage object
+      blocking: () => this.close(),
       terminated: () => {
         this.closed = true
         this.emit('error', new Error('Database unexpectedly closed'))
@@ -37,7 +32,7 @@ class Storage extends EventEmitter {
     })
   }
 
-  put (index, buf, cb = () => {}) {
+  put (index, buf, cb = _ => {}) {
     if (this.closed) return queueMicrotask(() => cb(new Error('Storage is closed')))
 
     const isLastChunk = (index === this.lastChunkIndex)
@@ -67,7 +62,7 @@ class Storage extends EventEmitter {
     })()
   }
 
-  get (index, opts, cb = () => {}) {
+  get (index, opts, cb = (_, __) => {}) {
     if (typeof opts === 'function') return this.get(index, {}, opts)
     if (!opts) opts = {}
     if (this.closed) return queueMicrotask(() => cb(new Error('Storage is closed')))
@@ -102,7 +97,7 @@ class Storage extends EventEmitter {
     })()
   }
 
-  close (cb = () => {}) {
+  close (cb = _ => {}) {
     if (this.closed) return queueMicrotask(() => cb(new Error('Storage is closed')))
     this.closed = true
 
@@ -119,7 +114,7 @@ class Storage extends EventEmitter {
     })()
   }
 
-  destroy (cb = () => {}) {
+  destroy (cb = _ => {}) {
     if (this.closed) return queueMicrotask(() => cb(new Error('Storage is closed')))
     if (this.destroyed) return queueMicrotask(() => cb(new Error('Storage is destroyed')))
     this.destroyed = true
@@ -131,7 +126,7 @@ class Storage extends EventEmitter {
       }
 
       try {
-        await idb.deleteDB(this.name)
+        await deleteDB(this.name)
       } catch (err) {
         cb(err)
         return
